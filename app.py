@@ -181,14 +181,6 @@ def upload():
         test = False
       try:
         pass
-        # connection = mysql.get_db()
-        # cursor = connection.cursor()
-        # cursor.execute("update words set word=%s, meaning=%s where id=%s", (word, meaning, word_id))
-        # connection.commit()
-        # connection.close()
-        # message = f"Successfully edited the word '{word}'"
-        # print(f"Just before flash message")
-        # show_flash(message, flash_success)
       except Exception:
         test = False
         print(f"{Back.RED}Uploading error: Was not able to upload image!")
@@ -217,11 +209,16 @@ def show_flash(message, cat_operation):
   flash(message, cat_operation)
 
 if __name__ == "__main__":
-  init() # initialize colorama
-  # app.run(debug = True, port = 5500)
-  app.debug = True
-  server = Server(app.wsgi_app)
-  # server.watch("templates/*")
-  # server.watch("static/css/*")
-  # server.watch("static/js/*")
-  server.serve()
+  mode = os.environ.get("MODE")
+  print(f"Mode is {mode}")
+  try:
+    if mode == "PRODUCTION":
+      app.run()
+    else:
+      init() # initialize colorama
+      # app.run(debug = True, port = 5500)
+      app.debug = True
+      server = Server(app.wsgi_app)
+      server.serve()
+  except Exception:
+    print(f"{Back.RED}Could not determine if in production of development machine!")
