@@ -6,6 +6,7 @@ import pymysql.cursors
 import json
 import os
 from colorama import init, Fore, Back, Style
+from decouple import config
 
 # flash constants
 flash_success = "flash-success"
@@ -13,12 +14,12 @@ flash_error = "flash-error"
 
 app = Flask(__name__)
 # flask app configuration
-app.secret_key = "secret"
-app.config["MYSQL_DATABASE_HOST"] = "localhost"
-app.config["MYSQL_DATABASE_DB"] = "dictionary"
-app.config["MYSQL_DATABASE_USER"] = "root"
-app.config["MYSQL_DATABASE_PORT"] = 3306
-app.config["MYSQL_DATABASE_PASSWORD"] = "tombra4ril"
+app.secret_key = config("SECRET_KEY")
+app.config["MYSQL_DATABASE_HOST"] = config("DB_HOST", default="localhost")
+app.config["MYSQL_DATABASE_DB"] = config("DB_NAME")
+app.config["MYSQL_DATABASE_USER"] = config("DB_USER")
+app.config["MYSQL_DATABASE_PORT"] = config("DB_PORT", cast=int)
+app.config["MYSQL_DATABASE_PASSWORD"] = config("DB_PASSWORD")
 
 mysql = MySQL(app, cursorclass = pymysql.cursors.DictCursor)
 
@@ -209,10 +210,9 @@ def show_flash(message, cat_operation):
   flash(message, cat_operation)
 
 if __name__ == "__main__":
-  mode = os.environ.get("MODE")
-  print(f"Mode is {mode}")
+  mode = config("DEBUB", default=True, cast=bool)
   try:
-    if mode == "PRODUCTION":
+    if mode:
       app.run()
     else:
       init() # initialize colorama
